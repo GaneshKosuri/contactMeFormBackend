@@ -1,15 +1,17 @@
 const express = require('express')
-const nodemailer = require("nodemailer");
 const cors = require('cors')
 require('dotenv').config();
+
+
+const nodemailer = require("nodemailer");
 
 const app = express()
 
 app.use(express.json())
 app.use(cors())
 
-const MAIL = process.env.EMAIL
-const PASSWORD = process.env.PASSWORD
+const RECEIVER_EMAIL = process.env.EMAIL
+const PASSWORD = process.env.AUTH
 
 const PORT = process.env.PORT || 5000
 
@@ -17,27 +19,30 @@ app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
 })
 
-app.post("/send-mail",async (request,res)=>{
-    const {name,mail,body} = request.body
+app.post("/send-mail", async (request, res) => {
+    const { name, mail, body } = request.body
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
+        host: "smtp.gmail.com",
+        port: PORT,
+        secure: false,
         auth: {
-            user: MAIL,
+            user: RECEIVER_EMAIL,
             pass: PASSWORD
         }
     });
 
-    let info = await transporter.sendMail({
+
+    await transporter.sendMail({
         from: mail,
-        to: MAIL,
+        to: RECEIVER_EMAIL,
         subject: `New Query from ${name}`,
         text: body,
-    }, (err, data) => {
-        if(err) {
+    }, (err, _) => {
+        if (err) {
             res.send("Error occured while contacting");
-        } else {
-            res.send('Email sent successfully');
         }
+        res.send('Email sent successfully');
     });
 })
