@@ -20,7 +20,7 @@ app.listen(PORT, () => {
 })
 
 app.post("/send-mail", async (request, res) => {
-    const { name, mail, body } = request.body
+    const { name, email, body } = request.body
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -35,7 +35,7 @@ app.post("/send-mail", async (request, res) => {
 
 
     await transporter.sendMail({
-        from: mail,
+        from: email,
         to: RECEIVER_EMAIL,
         subject: `New Query from ${name}`,
         text: body,
